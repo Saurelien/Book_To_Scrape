@@ -6,6 +6,7 @@ base_url2 = 'https://books.toscrape.com/catalogue/finders-keepers-bill-hodges-tr
 category_url = 'https://books.toscrape.com/catalogue/category/books/fiction_10/index.html'
 
 def get_categories():
+    
     # variable + methode pour la liaison entre le client et le site internet
     response = requests.get(base_url)
     # variable + methodepour recuperer les données
@@ -16,19 +17,23 @@ def get_categories():
         for category in category.find_all('a', href = True):
             category = category.text.strip() # afficher les données récupéré en utilisant une méthode qui récurpère uniquement le texte du lien "href" et de couper les espaces inutiles " .strip "
             return {'Categories': category}
+        
 get_categories()
 
 
 
 
 def get_books(category_url):
+    
     response = requests.get(category_url)
     cat_soup = BeautifulSoup(response.content, 'html.parser')
-    get_books = cat_soup.find_all('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
-    #data = ['https://books.toscrape.com/catalogue/category/books/fiction_10/index.html',
-    #        'https://books.toscrape.com/catalogue/category/books/fiction_10/page-2.html',
-    #        'https://books.toscrape.com/catalogue/category/books/fiction_10/page-3.html',
-    #        'https://books.toscrape.com/catalogue/category/books/fiction_10/page-4.html']
+    get_books = cat_soup.find_all(class_='default')
+    
+    data = ['https://books.toscrape.com/catalogue/category/books/fiction_10/index.html',
+            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-2.html',
+            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-3.html',
+            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-4.html']
+    
     for get_books_data in get_books :
         for get_books_data in get_books_data.find_all('h3'):
             books_link = get_books_data.find(href= True)
@@ -38,10 +43,15 @@ def get_books(category_url):
             print(prices)
             print(books_link.get('href').strip('../../../'))
             print(get_books_data.text.lower().strip('...'))
-    #next = True
-    #if next is True:
-    #    data2 = get_books(category_url + 'page=4')
-    #    data.extend(data2)
+            
+    next = True
+    if next is True:
+        
+        next_btn = get_books_data.find('a', class_='next')
+        print(next_btn)
+        data2 = get_books(category_url + 'page=4')
+        data.extend(data2)
+        
     #return {}
 get_books(category_url)
 
