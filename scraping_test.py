@@ -26,6 +26,7 @@ def cat_csv():
     with open('categories.csv', 'w') as csvfile:
         for category in get_categories:
             for category in category.find_all('a', href = True):
+                category = category.text.strip()
                 fieldnames = ['movie_categories']
                 wr = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 wr.writeheader()
