@@ -31,26 +31,28 @@ def get_books(category_url):
     cat_soup = BeautifulSoup(response.content, 'html.parser')
     get_books = cat_soup.find_all(class_='default')
     
-    data = ['https://books.toscrape.com/catalogue/category/books/fiction_10/index.html',
-            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-2.html',
-            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-3.html',
-            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-4.html']
     
     for get_books_data in get_books :
         for get_books_data in get_books_data.find_all('li', class_='col-xs-6 col-sm-4 col-md-3 col-lg-3'):
+            books_title = get_books_data.find('h3')
             books_link_url = get_books_data.find(href= True)
             prices = get_books_data.find('p', class_='price_color')
             images = get_books_data.find('a', href = True).find_next('img', class_='thumbnail')
             print(images.get('src').strip('../../../../'))
             print(prices.text.strip())
             print(books_link_url.get('href').strip('../../../'))
-            print(get_books_data.text.lower().strip())
+            print(books_title.text.lower().strip())
+    
+            data = ['https://books.toscrape.com/catalogue/category/books/fiction_10/index.html',
+            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-2.html',
+            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-3.html',
+            'https://books.toscrape.com/catalogue/category/books/fiction_10/page-4.html']
             
     next = True
     if next is True:
         
-        next_btn = get_books_data.find('a', class_='next')
-        print(next_btn.text)
+        #next_btn = get_books_data.find('a', class_='next')
+        #print(next_btn)
         data2 = get_books(category_url + 'page=4')
         data.extend(data2)
         
@@ -98,19 +100,19 @@ def get_book_data(base_url2):
             'image_url':filter_img
             }
 
-def cats_csv():
-    for category_url in get_categories():
-        with open('categories.csv', 'w') as csvfile:
-            for book_url in get_books(category_url):
-                data = get_book_data(book_url)
-                fieldnames = ['movie_categories', 'image_url', 'book_url']
-                wr = csv.DictWriter(csvfile, fieldnames = fieldnames)
-                wr.writeheader()
-                wr.writerow(category_url)
-                img = Image.open(requests.get(category_url, stream = True).raw)
-                img.save('image.jpg')
-                #Récupération de l'image
-cats_csv()
+
+for category_url in get_categories():
+    with open('categories.csv', 'w') as csvfile:
+        for book_url in get_books(category_url):
+            data = get_book_data(book_url)
+            fieldnames = ['movie_categories', 'image_url', 'book_url']
+            wr = csv.DictWriter(csvfile, fieldnames = fieldnames)
+            wr.writeheader()
+            wr.writerow(category_url)
+            img = Image.open(requests.get(category_url, stream = True).raw)
+            img.save('image.jpg')
+            #Récupération de l'image
+
 
 
 
