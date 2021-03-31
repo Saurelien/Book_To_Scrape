@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import csv
 # declarer la variable avec url pour le scrape
 base_url = 'https://books.toscrape.com'
 base_url2 = 'https://books.toscrape.com/catalogue/finders-keepers-bill-hodges-trilogy-2_807/index.html'
@@ -37,7 +38,7 @@ def get_books(category_url):
     for get_books_data in get_books :
         for get_books_data in get_books_data.find_all('h3'):
             books_link = get_books_data.find(href= True)
-            prices = get_books_data.find('div', {'class': 'product_price'})
+            prices = get_books_data.find('div', class_='product_price')
             images = get_books_data.find('a', href = True).find_next('img', class_='thumbnail')
             print(images.get('src').strip('../../../../'))
             print(prices)
@@ -97,9 +98,15 @@ def get_book_data(base_url2):
             }
 
 
-#for category_url in get_categories():
-    #Ouvrir fichier csv
-    #for book_url in get_books(category_url):
-        #data = get_book_data(book_url)
-         #Écrire une ligne dans le CSV
+for category_url in get_categories():
+    with open('categories.csv', 'w') as csvfile:
+        for book_url in get_books(category_url):
+            data = get_book_data(book_url)
+            fieldnames = ['movie_categories', 'image_url', 'book_url']
+            wr = csv.DictWriter(csvfile, fieldnames = fieldnames)
+            wr.writeheader()
+            wr.writerows(category_url)
          #Récupération de l'image
+
+
+

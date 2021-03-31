@@ -31,3 +31,4 @@ def cat_csv():
                 wr.writeheader()
                 wr.writerow(get_categories_data(base_url))
 cat_csv()
+
