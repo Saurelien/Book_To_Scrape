@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 import requests
 import csv
 
-def book_data(url):
+def book_data(url1):
     # p1 recuperation url de la page produit
-    response = requests.get(url)
+    response = requests.get(url1)
     # Déclaration de la variable de la classe beautifulsoup et s'en servir pour collecter les données nécessaires.
     book_soup = BeautifulSoup(response.content, 'html.parser')
     booking = book_soup.find_all(class_='default')
@@ -31,7 +31,7 @@ def book_data(url):
         image_scrape = books.find('div', class_='item active').find_next('img')
         filter_img = image_scrape.get('src').strip('../..')
         
-        return {'product_page_url': url,
+    return {'product_page_url': url1,
             'upc': upc,
             'title': title,
             'price_including_tax': price_include,

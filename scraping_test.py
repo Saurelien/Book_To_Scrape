@@ -5,7 +5,7 @@ import csv
 
 
 def get_categories_data(base_url):
-    
+    data = []
     # variable + methode pour la liaison entre le client et le site internet
     response = requests.get(base_url)
     # variable + methodepour recuperer les données
@@ -16,7 +16,8 @@ def get_categories_data(base_url):
         for category in category.find_all('a', href = True):
             category = category.text.strip() # afficher les données récupéré en utilisant une méthode qui récurpère uniquement le texte du lien "href" et de couper les espaces inutiles " .strip "
             print(category)
-            return {'movie_categories': category}
+            data.append(category)
+    return data
 
 def cat_csv():
     base_url = 'https://books.toscrape.com'

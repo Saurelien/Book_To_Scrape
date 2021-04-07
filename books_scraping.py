@@ -35,13 +35,15 @@ def get_books(category_url):
     for get_books_data in get_books :
         for get_books_data in get_books_data.find_all('li', class_='col-xs-6 col-sm-4 col-md-3 col-lg-3'):
             books_title = get_books_data.find('h3')
-            books_link_url = get_books_data.find(href= True)
+            books_link_url = get_books_data.find(href = True)
             prices = get_books_data.find('p', class_='price_color')
+            switch = get_books_data.find('div').find_next('li', class_='next', text = 'next')
             images = get_books_data.find('a', href = True).find_next('img', class_='thumbnail')
             print(images.get('src').strip('../../../../'))
             print(prices.text.strip())
             print(books_link_url.get('href').strip('../../../'))
             print(books_title.text.lower().strip())
+            print(switch.text)
     
             data = ['https://books.toscrape.com/catalogue/category/books/fiction_10/index.html',
             'https://books.toscrape.com/catalogue/category/books/fiction_10/page-2.html',
@@ -51,10 +53,14 @@ def get_books(category_url):
     next = True
     if next is True:
         
-        #next_btn = get_books_data.find('a', class_='next')
-        #print(next_btn)
-        data2 = get_books(category_url + 'page=4')
-        data.extend(data2)
+        data = get_books_data.find('a', class_='next')
+        
+        if data is True:
+            #for in :
+            #variable
+            #print(next_btn)
+            data2 = get_books(category_url + 'page=4')
+            data.extend(data2)
         
     #return {}
 get_books(category_url)
@@ -109,10 +115,12 @@ for category_url in get_categories():
             wr = csv.DictWriter(csvfile, fieldnames = fieldnames)
             wr.writeheader()
             wr.writerow(category_url)
-            img = Image.open(requests.get(category_url, stream = True).raw)
-            img.save('image.jpg')
+            
             #Récupération de l'image
 
+#r = requests.get(https://books.toscrape.com/media/cache/76/80/76804e1881b630a110794fef5aad02cf.jpg)
+#with open(path, 'wb') as f:
+#    f.write(r.content)
 
 
-
+#fonction recursive
