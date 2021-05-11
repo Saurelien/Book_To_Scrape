@@ -1,20 +1,15 @@
 from bs4 import BeautifulSoup
 import requests
 import csv
-#from PIL import Image
-
 
 URL = 'https://books.toscrape.com/catalogue/finders-keepers-bill-hodges-trilogy-2_807/index.html'
 GLOBAL_CAT_URL = 'https://books.toscrape.com/'
 CATEGORY_URL = 'https://books.toscrape.com/catalogue/category/books/fiction_10/index.html'
 
 def book_data(url):
-    # p1 recuperation url de la page produit
     response = requests.get(url)
-    # Déclaration de la variable de la classe beautifulsoup et s'en servir pour collecter les données nécessaires.
     soup = BeautifulSoup(response.content, 'html.parser')
     booking = soup.find_all(class_='default')
-    print(url)
 
     for books in booking:
         upc = books.find('th', text='UPC').find_next_sibling('td').text# p2 Collecte du code produit
@@ -23,7 +18,7 @@ def book_data(url):
         price_exclude = books.find('th', text='Price (excl. tax)').find_next_sibling('td').text# p5 prix hors taxe.
         availability = books.find('th', text='Availability').find_next_sibling('td').text# p6 disponibilité.
         stock = availability.strip('In stock () available')
-        description = books.find(class_='sub-header').find_next_sibling('p').text# p7 description produit.
+        description = books.find(class_='sub-header').find_next_sibling('p')# p7 description produit.
         category = books.find(class_='breadcrumb').find_next('a').text# p8 cathégory.
         review = books.find('p', class_='star-rating').get('class')[1] #"avis" je cherche a retourner la valeur de la position dans la class star-rating[0] Five[1]
         image_scrape = books.find('div', class_='item active').find_next('img')# p10 url de l'image.
@@ -41,13 +36,12 @@ def book_data(url):
             'image_url':filter_img
             }
 
-
-def save_img(url, path):
-    url = 'https://books.toscrape.com/'
-    r = requests.get(url)
-    soup = BeautifulSoup(r.content, 'html.parser')
-    for img in soup.find('div', class_='image_container').find_all('img', class_='thumbnail'):
-        img_url = img.get('src')
+#def save_img(url, path):
+#    url = 'https://books.toscrape.com/'
+#    r = requests.get(url)
+#    soup = BeautifulSoup(r.content, 'html.parser')
+#    for img in soup.find('div', class_='image_container').find_all('img', class_='thumbnail'):
+#        img_url = img.get('src')
         #print(img_url)
         #with_name(path)
             
@@ -62,16 +56,8 @@ def get_categories():
     for category in get_categories_scrape:
         books_url = category.find('a', href = True).get('href')
         cat_title = category.text.strip() # afficher les données récupéré en utilisant une méthode qui récurpère uniquement le texte du lien "href" et de couper les espaces inutiles " .strip "
-        print(books_url)
-        print(cat_title)
-        data[cat_title] = global_cat_url + books_url  # data a pour clef la varaible cat_title des titres des categories et a comme valeur l'url des categories.
+        data[cat_title] = global_cat_url + books_url  # data a pour clef la varaible cat_title des titres des categories et à comme valeur l'url des categories.
     return data
-
-
-
-
-
- 
 
 # fonction qui boucle sur les livres d'une catégorie et les pages qui la compose
 def get_books_url(url):
@@ -87,20 +73,14 @@ def get_books_url(url):
         btn_next = url.split('/')[0 : -1] # destructuration de l'url category_url du dernier element "index.html"
         btn_next.append(next.find('a').get('href')) # ajout de l'element ciblé sur la nouvel url "page-2.html"
         btn_next1 = '/'.join(btn_next) # restructuration de l'url avec le nouvel element
-        print(btn_next1)
         links.extend(get_books_url(btn_next1))
     return links          
 
-
 for category_name,category_url in get_categories().items():
-    print(category_url)
-    with open(category_name + '.csv', 'w') as csvfile:
-        fieldname = ['product_page_url', 'upc', 'title', 'price_including_tax', 'price', 'price_excluding_tax', 'number_available', 'product_description', 'category', 'review_rating', 'image_url']
-        wr = csv.DictWriter(csvfile, fieldnames=fieldname)
+    with open(category_name + '.csv', 'w', encoding='utf-8') as csvfile:
+        fieldnames = ['product_page_url', 'upc', 'title', 'price_including_tax', 'price', 'price_excluding_tax', 'number_available', 'product_description', 'category', 'review_rating', 'image_url']
+        wr = csv.DictWriter(csvfile, fieldnames=fieldnames)
         wr.writeheader()
         for url in get_books_url(category_url):
             book_info = book_data(url)
             wr.writerow(book_info)
-
-
-
