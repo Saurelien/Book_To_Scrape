@@ -37,17 +37,6 @@ def book_data(url):
             'image_url':filter_img
             }
 
-def save_img(url, path):
-    img_urls = []
-    soup = BeautifulSoup(requests.get(url).content, 'html.parser')
-    for img in soup.find_all('div', class_='image_container').find_all('img', class_='thumbnail'):
-        img_url = img.attrs.get('src')
-    print(img_url)
-    if img_url == 'src':
-        img_url.append(next.find('a').get('href'))
-        with open(path, 'w')as f:
-            f.write(img_urls)
-    return img_urls
 
 def get_categories():
     global_cat_url = 'https://books.toscrape.com/'
