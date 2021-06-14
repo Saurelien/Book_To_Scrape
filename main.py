@@ -83,6 +83,7 @@ for category_name,category_url in get_categories().items():
         wr.writeheader()
         for url in get_books_data(category_url):# je boucle sur les différentes fonctions en les appellants
             book_info = book_data(url)
+            print(book_info)
             wr.writerow(book_info)
             save_img(url = book_info['image_url'], path = book_info['upc'] + '.jpg')
             
