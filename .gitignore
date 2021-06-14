@@ -1,7 +1,3 @@
 projet2/
-venv/
-env/
-.env
-.venv
-.projet2
 *.csv
+*.jpg

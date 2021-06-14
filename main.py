@@ -2,10 +2,9 @@ from bs4 import BeautifulSoup
 import requests
 import csv
 
-URL = 'https://books.toscrape.com/catalogue/finders-keepers-bill-hodges-trilogy-2_807/index.html'
 GLOBAL_CAT_URL = 'https://books.toscrape.com/'
-CATEGORY_URL = 'https://books.toscrape.com/catalogue/category/books/fiction_10/index.html'
 
+# Fonction permettant de récupérer les informations demandé d'un livre
 def book_data(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
@@ -34,10 +33,16 @@ def book_data(url):
             'product_description':book_description,
             'category':category,
             'review_rating':review,
-            'image_url':filter_img
+            'image_url': GLOBAL_CAT_URL + filter_img
             }
 
+# fonction permettant de récuperer les images
+def save_img(url, path):
+    r = requests.get(url)
+    with open (path, 'wb') as img_file:
+        img_file.write(r.content)
 
+# fonction qui récupère les différentes catégories
 def get_categories():
     global_cat_url = 'https://books.toscrape.com/'
     data = {}
@@ -53,25 +58,31 @@ def get_categories():
 # fonction qui boucle sur les livres d'une catégorie et les pages qui la compose
 def get_books_data(url):
     links = []
-    r = requests.get(url) # récupération de l'url pour le scrape
-    soup = BeautifulSoup(r.content, 'html.parser') # méthode pour récupérer les données
-    for books in soup.find_all('article', class_='product_pod'):# boucler sur la methode et récuperer toutes les données d'une page ou plusieurs pages selon la condition
+    r = requests.get(url)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    for books in soup.find_all('article', class_='product_pod'):
         books_link_url = books.find('a', href = True)
         books_url = books_link_url.get('href').strip('../../../')
         links.append(GLOBAL_CAT_URL + 'catalogue/' + books_url)
     next = soup.find('li', class_='next')
     if next is not None:
-        next_page = url.split('/')[0 : -1] # destructuration de l'url category_url du dernier element "index.html"
-        next_page.append(next.find('a').get('href')) # ajout de l'element ciblé sur la nouvel url "page-2.html"
-        next_page_url = '/'.join(next_page) # restructuration de l'url avec le nouvel element
+        # destructuration de l'url category_url du dernier element "index.html"
+        next_page = url.split('/')[0 : -1]
+        # ajout de l'element ciblé sur la nouvelle url "page-2.html"
+        next_page.append(next.find('a').get('href'))
+        # restructuration de l'url avec le nouvel element
+        next_page_url = '/'.join(next_page)
         links.extend(get_books_data(next_page_url))
     return links          
 
+# Code d'execution du programme qui collecte les images ainsi que les categories au format csv du site.
 for category_name,category_url in get_categories().items():
     with open(category_name + '.csv', 'w', encoding='utf-8') as csvfile:
-        fieldnames = ['product_page_url', 'upc', 'title', 'price_including_tax', 'price', 'price_excluding_tax', 'number_available', 'product_description', 'category', 'review_rating', 'image_url']
+        fieldnames = ['product_page_url', 'upc', 'title', 'price_including_tax', 'price_excluding_tax', 'number_available', 'product_description', 'category', 'review_rating', 'image_url']
         wr = csv.DictWriter(csvfile, fieldnames=fieldnames)
         wr.writeheader()
-        for url in get_books_data(category_url):
+        for url in get_books_data(category_url):# je boucle sur les différentes fonctions en les appellants
             book_info = book_data(url)
             wr.writerow(book_info)
+            save_img(url = book_info['image_url'], path = book_info['upc'] + '.jpg')
+            
