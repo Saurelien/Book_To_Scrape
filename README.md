@@ -21,9 +21,12 @@
 * Un environement est dans la bonne pratique nommé " env " mais il peut aussi porter le nom du projet qu'il va contenir.
 * Initiez la commande
 * python -m venv <environment name> " <environement name> est le nom de l'environement virtuel qui contiendra le projet "
-* Pour activer l'environnement virtuel :
+# Pour activer l'environnement virtuel :
 * source <env name>/bin/activate
 * Sous windows <env name>/Scripts/activate.bat
+# Pour désactiver l'environnement virtuel :
+* source <env name>/bin/deactivate
+* Sous windows <env name>/Scripts/deactivate.bat
 
 
 ########################################################
