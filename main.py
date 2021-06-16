@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
+import os
+from pathlib import Path
 import csv
 
 GLOBAL_CAT_URL = 'https://books.toscrape.com/'
@@ -19,7 +21,7 @@ def book_data(url):
         stock = availability.strip('In stock () available')
         description = books.find(class_='sub-header').find_next('p')# p7 description produit.
         book_description = description.text
-        category = books.find(class_='breadcrumb').find_next('a').text# p8 cathégory.
+        category = books.find(class_='breadcrumb').find_all('a')[2].text# p8  récupération de la cathégorie d'une liste retourné par find_all a la position 2
         review = books.find('p', class_='star-rating').get('class')[1] #"avis" je cherche a retourner la valeur de la position dans la class star-rating[0] Five[1]
         image_scrape = books.find('div', class_='item active').find_next('img')# p10 url de l'image.
         filter_img = image_scrape.get('src').strip('../..')
@@ -37,10 +39,13 @@ def book_data(url):
             }
 
 # fonction permettant de récuperer les images
-def save_img(url, path):
+def save_img(url, path, category_name):
     r = requests.get(url)
-    with open (path, 'wb') as img_file:
+    os.makedirs('images', exist_ok=True)
+    os.makedirs('images/'+ category_name, exist_ok=True)
+    with open ('images/'+  category_name + '/' + path, 'wb') as img_file:
         img_file.write(r.content)
+            
 
 # fonction qui récupère les différentes catégories
 def get_categories():
@@ -73,17 +78,20 @@ def get_books_data(url):
         # restructuration de l'url avec le nouvel element
         next_page_url = '/'.join(next_page)
         links.extend(get_books_data(next_page_url))
-    return links          
+    return links
 
+
+        
 # Code d'execution du programme qui collecte les images ainsi que les categories au format csv du site.
 for category_name,category_url in get_categories().items():
-    with open(category_name + '.csv', 'w', encoding='utf-8') as csvfile:
+    os.makedirs('data_csv', exist_ok=True)
+    with open('data_csv/' + category_name + '.csv', 'w', encoding='utf-8') as csvfile:
         fieldnames = ['product_page_url', 'upc', 'title', 'price_including_tax', 'price_excluding_tax', 'number_available', 'product_description', 'category', 'review_rating', 'image_url']
         wr = csv.DictWriter(csvfile, fieldnames=fieldnames)
         wr.writeheader()
         for url in get_books_data(category_url):# je boucle sur les différentes fonctions en les appellants
             book_info = book_data(url)
-            print(book_info)
             wr.writerow(book_info)
-            save_img(url = book_info['image_url'], path = book_info['upc'] + '.jpg')
+            save_img(url = book_info['image_url'], path = book_info['upc'] + '.jpg', category_name = book_info['category'])
             
+
