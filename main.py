@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 import os
-from pathlib import Path
 import csv
 
 GLOBAL_CAT_URL = 'https://books.toscrape.com/'
@@ -41,8 +40,8 @@ def book_data(url):
 # fonction permettant de récuperer les images
 def save_img(url, path, category_name):
     r = requests.get(url)
-    os.makedirs('images', exist_ok=True)
-    os.makedirs('images/'+ category_name, exist_ok=True)
+    os.makedirs('images', exist_ok=True)# avec la methode "os.makedirs()" me permet de renseigner plusieurs paramètres afin d'eviter des erreurs si le dossier existe déjà
+    os.makedirs('images/'+ category_name, exist_ok=True)# par exemple ici je renseigne le dossier "images" ou j'ajoute une extension pour un sous dossier " images/ " pour recuperer les noms de categories
     with open ('images/'+  category_name + '/' + path, 'wb') as img_file:# Je met en paramètre la création du dossier "images" en concaténant la variable category_name ainsi que le slash pour la création des sous dossier
         img_file.write(r.content)
             
