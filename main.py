@@ -43,7 +43,7 @@ def save_img(url, path, category_name):
     r = requests.get(url)
     os.makedirs('images', exist_ok=True)
     os.makedirs('images/'+ category_name, exist_ok=True)
-    with open ('images/'+  category_name + '/' + path, 'wb') as img_file:
+    with open ('images/'+  category_name + '/' + path, 'wb') as img_file:# Je met en paramètre la création du dossier "images" en concaténant la variable category_name ainsi que le slash pour la création des sous dossier
         img_file.write(r.content)
             
 
@@ -82,7 +82,7 @@ def get_books_data(url):
 
 
         
-# Code d'execution du programme qui collecte les images ainsi que les categories au format csv du site.
+# Code d'execution du programme qui collecte les images ainsi que les categories au format csv du site en les stockants dans des dossiers spécifiques.
 for category_name,category_url in get_categories().items():
     os.makedirs('data_csv', exist_ok=True)
     with open('data_csv/' + category_name + '.csv', 'w', encoding='utf-8') as csvfile:
@@ -92,6 +92,6 @@ for category_name,category_url in get_categories().items():
         for url in get_books_data(category_url):# je boucle sur les différentes fonctions en les appellants
             book_info = book_data(url)
             wr.writerow(book_info)
-            save_img(url = book_info['image_url'], path = book_info['upc'] + '.jpg', category_name = book_info['category'])
+            save_img(url = book_info['image_url'], path = book_info['upc'] + '.jpg', category_name = book_info['category'])# J'affecte les paramètress de la fonction a une variable qui récupère les clés du dictionaire de la fonction " book_data " qui renvois les info d'un livre
             
 
