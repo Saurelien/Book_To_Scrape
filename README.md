@@ -3,7 +3,7 @@
 #################################################
 
 
-# J'ai été affecté par mon Lead Dev Sam afin de produire une version beta d'un programme pour suivre les prix des livres sur demande auprès de Books To Scrape. Les données récupéré sont stocké dans plusieurs fichiers au format csv par catégorie.
+# J'ai été affecté par mon Lead Dev Sam afin de produire une version beta d'un programme pour suivre les prix des livres sur demande auprès de Books To Scrape. Les données récupéré sont stockées dans plusieurs fichiers au format csv par catégorie.
 
 
 ########################################################
